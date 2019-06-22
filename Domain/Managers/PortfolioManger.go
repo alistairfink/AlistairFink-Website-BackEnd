@@ -47,12 +47,18 @@ func (this *PortfolioManager) GetAll() (*[]DomainModels.PortfolioDomainModel) {
 }
 
 func (this *PortfolioManager) GetFeatured() (*[]DomainModels.PortfolioDomainModel) {
-	//featured := this.PortfolioCommand.GetFeatured()
+	featured := this.PortfolioCommand.GetFeatured()
+	Sort.SortPortfolioFeaturedBySortOrder(featured)
 
-	// TODO: Sort this then get each one
+	// Featured table isn't too big so this might be ok
+	// If this is a problem redo this to join portfolio_featured and portfolio
+	var portfolioDomainModels []DomainModels.PortfolioDomainModel
+	for _, portfolioItem := range *featured {
+		model := this.Get(portfolioItem.PortfolioUuid)
+		portfolioDomainModels = append(portfolioDomainModels, *model)
+	}
 
-
-	return nil
+	return &portfolioDomainModels
 }
 
 func (this *PortfolioManager) Update(model *DomainModels.PortfolioDomainModel) (*DomainModels.PortfolioDomainModel) {
