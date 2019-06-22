@@ -24,6 +24,16 @@ func (this *PortfolioVideoCommand) Get(uuid uuid.UUID) (*DataModels.PortfolioVid
 	return &models[0]
 }
 
+func (this *PortfolioVideoCommand) GetByPortfolioUuid(portfolioUuid uuid.UUID) (*[]DataModels.PortfolioVideoDataModel) {
+	var models []DataModels.PortfolioVideoDataModel
+	err := this.DB.Model(&models).Where("portfolio_id = ?", portfolioUuid).Select()
+	if err != nil {
+		panic(err)
+	}
+
+	return &models
+}
+
 func (this *PortfolioVideoCommand) GetAll() (*[]DataModels.PortfolioVideoDataModel) {
 	var models []DataModels.PortfolioVideoDataModel
 	err := this.DB.Model(&models).Select()

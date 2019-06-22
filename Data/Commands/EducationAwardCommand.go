@@ -24,6 +24,16 @@ func (this *EducationAwardCommand) Get(uuid uuid.UUID) (*DataModels.EducationAwa
 	return &models[0]
 }
 
+func (this *EducationAwardCommand) GetByEducationUuid(educationUuid uuid.UUID) (*[]DataModels.EducationAwardDataModel) {
+	var models []DataModels.EducationAwardDataModel
+	err := this.DB.Model(&models).Where("education_id = ?", educationUuid).Select()
+	if err != nil {
+		panic(err)
+	}
+
+	return &models
+}
+
 func (this *EducationAwardCommand) GetAll() (*[]DataModels.EducationAwardDataModel) {
 	var models []DataModels.EducationAwardDataModel
 	err := this.DB.Model(&models).Select()

@@ -24,6 +24,16 @@ func (this *AboutDescriptionCommand) Get(uuid uuid.UUID) (*DataModels.AboutDescr
 	return &models[0]
 }
 
+func (this *AboutDescriptionCommand) GetByAboutUuid(aboutUuid uuid.UUID) (*[]DataModels.AboutDescriptionDataModel) {
+	var models []DataModels.AboutDescriptionDataModel
+	err := this.DB.Model(&models).Where("about_id = ?", aboutUuid).Select()
+	if err != nil {
+		panic(err)
+	}
+
+	return &models
+}
+
 func (this *AboutDescriptionCommand) GetAll() (*[]DataModels.AboutDescriptionDataModel) {
 	var models []DataModels.AboutDescriptionDataModel
 	err := this.DB.Model(&models).Select()

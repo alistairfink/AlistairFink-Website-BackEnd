@@ -24,6 +24,16 @@ func (this *ExperienceContentCommand) Get(uuid uuid.UUID) (*DataModels.Experienc
 	return &models[0]
 }
 
+func (this *ExperienceContentCommand) GetByExperienceUuid(experienceUuid uuid.UUID) (*[]DataModels.ExperienceContentDataModel) {
+	var models []DataModels.ExperienceContentDataModel
+	err := this.DB.Model(&models).Where("experience_id = ?", experienceUuid).Select()
+	if err != nil {
+		panic(err)
+	}
+
+	return &models
+}
+
 func (this *ExperienceContentCommand) GetAll() (*[]DataModels.ExperienceContentDataModel) {
 	var models []DataModels.ExperienceContentDataModel
 	err := this.DB.Model(&models).Select()
