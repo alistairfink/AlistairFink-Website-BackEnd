@@ -2,6 +2,7 @@ package Managers
 
 import (
 	"github.com/google/uuid"
+	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/Sort"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Data/Commands"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/DomainModels"
 )
@@ -12,12 +13,32 @@ type ExperienceManager struct {
 }
 
 func (this *ExperienceManager) Get(uuid uuid.UUID) (*DomainModels.ExperienceDomainModel){
-	// TODO: Don't forget to sort this and getall
-	return nil
+	experienceDatModel := this.ExperienceCommand.Get(uuid)
+	if experienceDatModel == nil {
+		return nil
+	}
+
+	experienceContent := this.ExperienceContentCommand.GetByExperienceUuid(uuid)
+	Sort.SortExperienceContentBySortOrder(experienceContent)
+
+	var experienceDomainModel DomainModels.ExperienceDomainModel
+	experienceDomainModel.ToDomainModel(experienceDatModel, experienceContent)
+	return &experienceDomainModel
 }
 
 func (this *ExperienceManager) GetAll() (*[]DomainModels.ExperienceDomainModel) {
-	return nil
+	experienceDataModels := this.ExperienceCommand.GetAll()
+	var experienceDomainModels []DomainModels.ExperienceDomainModel
+	for _, dataModel := range *experienceDataModels {
+		experienceContents := this.ExperienceContentCommand.GetByExperienceUuid(dataModel.Uuid)
+		Sort.SortExperienceContentBySortOrder(experienceContents)
+		var domainModel DomainModels.ExperienceDomainModel
+		domainModel.ToDomainModel(&dataModel, experienceContents)
+		experienceDomainModels = append(experienceDomainModels, domainModel)
+	}
+
+	Sort.SortExperienceByStartDate(&experienceDomainModels)
+	return &experienceDomainModels
 }
 
 func (this *ExperienceManager) Update(model *DomainModels.ExperienceDomainModel) (*DomainModels.ExperienceDomainModel) {
