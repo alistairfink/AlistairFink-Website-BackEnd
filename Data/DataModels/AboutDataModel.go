@@ -5,7 +5,7 @@ import (
 )
 
 type AboutDataModel struct {
-	tableName struct{} `sql:"About"`
+	tableName struct{} `sql:"about"`
 	Uuid uuid.UUID `sql:"id, pk"`
 	Image string `sql:"image, notnull"`
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type PortfolioDataModel struct {
-	tableName struct{} `sql:"Portfolio"`
+	tableName struct{} `sql:"portfolio"`
 	Uuid uuid.UUID `sql:"id, pk"`
 	Name string `sql:"string, notnull"`
 	Thumbnail string `sql:"string, notnull"`

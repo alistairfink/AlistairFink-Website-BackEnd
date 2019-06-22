@@ -6,7 +6,7 @@ import (
 )
 
 type EducationDataModel struct {
-	tableName struct{} `sql:"Education"`
+	tableName struct{} `sql:"education"`
 	Uuid uuid.UUID `sql:"id, pk"`
 	SchoolName string `sql:"school_name, notnull"`
 	StartDate time.Time `sql:"start_date, notnull"`

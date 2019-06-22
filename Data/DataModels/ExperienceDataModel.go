@@ -6,7 +6,7 @@ import (
 )
 
 type ExperienceDataModel struct {
-	tableName struct{} `sql:"Experience"`
+	tableName struct{} `sql:"experience"`
 	Uuid uuid.UUID `sql:"id, pk"`
 	Position string `sql:"position, notnull"`
 	StartDate time.Time `sql:"start_date, notnull"`

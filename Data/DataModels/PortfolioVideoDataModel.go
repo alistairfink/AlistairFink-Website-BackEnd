@@ -5,7 +5,7 @@ import (
 )
 
 type PortfolioVideoDataModel struct {
-	tableName struct{} `sql:"Portfolio_Video"`
+	tableName struct{} `sql:"portfolio_video"`
 	Uuid uuid.UUID `sql:"id, pk"`
 	PortfolioUuid uuid.UUID `sql:"portfolio_id, fk:Portfolio.id, notnull"`
 	Video string `sql:"video, notnull"`

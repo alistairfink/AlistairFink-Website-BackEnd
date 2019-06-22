@@ -5,7 +5,7 @@ import (
 )
 
 type EducationScholarshipDataModel struct {
-	tableName struct{} `sql:"Education_Scholarship"`
+	tableName struct{} `sql:"education_scholarship"`
 	Uuid uuid.UUID `sql:"id, pk"`
 	Educationuuid uuid.UUID `sql:"education_id, fk:Education.id, notnull"`
 	Name string `sql:"name, notnull"`
