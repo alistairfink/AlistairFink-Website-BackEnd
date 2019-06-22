@@ -26,7 +26,7 @@ func (this sortPortfolio) Sort(portfolio *[]DomainModels.PortfolioDomainModel) {
 
 type portfolioSorter struct {
 	portfolio *[]DomainModels.PortfolioDomainModel
-	by func(desc1, desc2 DomainModels.PortfolioDomainModel) bool
+	by func(pItem1, pItem2 DomainModels.PortfolioDomainModel) bool
 }
 
 func (this *portfolioSorter) Len() int {

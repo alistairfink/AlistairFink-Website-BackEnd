@@ -13,11 +13,11 @@ type EducationManager struct {
 }
 
 // func (this *EducationManager) Get(uuid uuid.UUID) (*DomainModels.EducationDomainModel){
-
+	// TODO: SORT
 // }
 
 // func (this *EducationManager) GetAll() (*[]DomainModels.EducationDomainModel) {
-	
+	// TODO: SORT
 // }
 
 // func (this *EducationManager) Update(model *DomainModels.EducationDomainModel) (*DomainModels.EducationDomainModel) {

@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Data/Commands"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/DomainModels"
+	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/Sort"
 )
 
 type AboutManager struct {
@@ -20,6 +21,7 @@ func (this *AboutManager) Get(uuid uuid.UUID) (*DomainModels.AboutDomainModel){
 	aboutDesc := this.AboutDescriptionCommand.GetByAboutUuid(uuid)
 
 	var domainModel DomainModels.AboutDomainModel
+	Sort.SortAboutDescriptionBySortOrder(aboutDesc)
 	domainModel.ToDomainModel(about, aboutDesc)
 	return &domainModel
 }

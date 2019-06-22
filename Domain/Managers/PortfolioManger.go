@@ -20,6 +20,7 @@ func (this *PortfolioManager) Get(uuid uuid.UUID) (*DomainModels.PortfolioDomain
 		return nil
 	}
 
+	// TODO: Sort these
 	description := this.PortfolioDescriptionCommand.GetByPortfolioUuid(uuid)
 	images := this.PortfolioImageCommand.GetByPortfolioUuid(uuid)
 	videos := this.PortfolioVideoCommand.GetByPortfolioUuid(uuid)
@@ -44,16 +45,12 @@ func (this *PortfolioManager) GetAll() (*[]DomainModels.PortfolioDomainModel) {
 }
 
 func (this *PortfolioManager) GetFeatured() (*[]DomainModels.PortfolioDomainModel) {
-	portfolioItems := this.PortfolioCommand.GetFeatured()
+	featured := this.PortfolioCommand.GetFeatured()
 
-	domainModels := []DomainModels.PortfolioDomainModel{}
-	for _, dataModel := range *portfolioItems {
-		var model DomainModels.PortfolioDomainModel
-		model.ToDomainModel(&dataModel, nil, nil, nil)
-		domainModels = append(domainModels, model)
-	}
+	// TODO: Sort this then get each one
 
-	return &domainModels
+
+	return nil
 }
 
 func (this *PortfolioManager) Update(model *DomainModels.PortfolioDomainModel) (*DomainModels.PortfolioDomainModel) {
@@ -83,7 +80,7 @@ func (this *PortfolioManager) Update(model *DomainModels.PortfolioDomainModel) (
 }
 
 func (this *PortfolioManager) Insert(model *DomainModels.PortfolioDomainModel) (*DomainModels.PortfolioDomainModel) {
-	this.PortfolioCommand.Upsert(model.ToDataModel())
+	dataModel := this.PortfolioCommand.Upsert(model.ToDataModel())
 	
 	for _, video := range *model.Video {
 		this.PortfolioVideoCommand.Upsert(&video)
@@ -97,7 +94,7 @@ func (this *PortfolioManager) Insert(model *DomainModels.PortfolioDomainModel) (
 		this.PortfolioDescriptionCommand.Upsert(&desc)
 	}
 
-	return this.Get(model.Uuid)
+	return this.Get(dataModel.Uuid)
 }
 
 func (this *PortfolioManager) Delete(uuid uuid.UUID) bool {

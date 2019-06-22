@@ -34,19 +34,14 @@ func (this *PortfolioCommand) GetAll() (*[]DataModels.PortfolioDataModel) {
 	return &models
 }
 
-func (this *PortfolioCommand) GetFeatured() (*[]DataModels.PortfolioDataModel) {
+func (this *PortfolioCommand) GetFeatured() (*[]DataModels.PortfolioFeaturedDataModel) {
 	var models []DataModels.PortfolioFeaturedDataModel
 	err := this.DB.Model(&models).Select()
 	if err != nil {
 		panic(err)
 	}
 
-	var portfolioModels []DataModels.PortfolioDataModel
-	for _, featuredItem := range models {
-		portfolioModels = append(portfolioModels, *this.Get(featuredItem.PortfolioUuid))
-	}
-
-	return &portfolioModels
+	return &models
 }
 
 func (this *PortfolioCommand) Upsert(model *DataModels.PortfolioDataModel) (*DataModels.PortfolioDataModel) {
