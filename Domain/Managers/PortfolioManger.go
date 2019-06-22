@@ -20,10 +20,12 @@ func (this *PortfolioManager) Get(uuid uuid.UUID) (*DomainModels.PortfolioDomain
 		return nil
 	}
 
-	// TODO: Sort these
 	description := this.PortfolioDescriptionCommand.GetByPortfolioUuid(uuid)
+	Sort.SortPortfolioDescriptionBySortOrder(description)
 	images := this.PortfolioImageCommand.GetByPortfolioUuid(uuid)
+	Sort.SortPortfolioImageBySortOrder(images)
 	videos := this.PortfolioVideoCommand.GetByPortfolioUuid(uuid)
+	Sort.SortPortfolioVideoBySortOrder(videos)
 
 	var domainModel DomainModels.PortfolioDomainModel
 	domainModel.ToDomainModel(portfolioDataModel, description, images, videos)
@@ -45,7 +47,7 @@ func (this *PortfolioManager) GetAll() (*[]DomainModels.PortfolioDomainModel) {
 }
 
 func (this *PortfolioManager) GetFeatured() (*[]DomainModels.PortfolioDomainModel) {
-	featured := this.PortfolioCommand.GetFeatured()
+	//featured := this.PortfolioCommand.GetFeatured()
 
 	// TODO: Sort this then get each one
 
