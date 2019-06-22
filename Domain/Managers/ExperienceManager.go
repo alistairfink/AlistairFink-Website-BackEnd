@@ -30,11 +30,8 @@ func (this *ExperienceManager) GetAll() (*[]DomainModels.ExperienceDomainModel) 
 	experienceDataModels := this.ExperienceCommand.GetAll()
 	var experienceDomainModels []DomainModels.ExperienceDomainModel
 	for _, dataModel := range *experienceDataModels {
-		experienceContents := this.ExperienceContentCommand.GetByExperienceUuid(dataModel.Uuid)
-		Sort.SortExperienceContentBySortOrder(experienceContents)
-		var domainModel DomainModels.ExperienceDomainModel
-		domainModel.ToDomainModel(&dataModel, experienceContents)
-		experienceDomainModels = append(experienceDomainModels, domainModel)
+		domainModel := this.Get(dataModel.Uuid)
+		experienceDomainModels = append(experienceDomainModels, *domainModel)
 	}
 
 	Sort.SortExperienceByStartDate(&experienceDomainModels)
@@ -66,11 +63,14 @@ func (this *ExperienceManager) Insert(model *DomainModels.ExperienceDomainModel)
 }
 
 func (this *ExperienceManager) Delete(uuid uuid.UUID) bool {
+	if !this.ExperienceCommand.Exists(uuid) {
+		return false
+	}
+
 	content := this.ExperienceContentCommand.GetByExperienceUuid(uuid)
 	for _, model := range *content {
 		this.ExperienceContentCommand.Delete(model.Uuid)
 	}
 
-	this.ExperienceCommand.Delete(uuid)
-	return true	
+	return this.ExperienceCommand.Delete(uuid)	
 }

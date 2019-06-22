@@ -106,6 +106,10 @@ func (this *PortfolioManager) Insert(model *DomainModels.PortfolioDomainModel) (
 }
 
 func (this *PortfolioManager) Delete(uuid uuid.UUID) bool {
+	if !this.PortfolioCommand.Exists(uuid) {
+		return false
+	}
+	
 	portfolioDescriptions := this.PortfolioDescriptionCommand.GetByPortfolioUuid(uuid)
 	portfolioImages := this.PortfolioImageCommand.GetByPortfolioUuid(uuid)
 	portfolioVideos := this.PortfolioVideoCommand.GetByPortfolioUuid(uuid)
@@ -122,7 +126,5 @@ func (this *PortfolioManager) Delete(uuid uuid.UUID) bool {
 		this.PortfolioDescriptionCommand.Delete(desc.Uuid)
 	}
 
-	this.PortfolioCommand.Delete(uuid)
-
-	return true
+	return this.PortfolioCommand.Delete(uuid)
 }
