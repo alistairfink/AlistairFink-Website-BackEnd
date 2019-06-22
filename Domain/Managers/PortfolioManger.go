@@ -16,6 +16,10 @@ type PortfolioManager struct {
 
 func (this *PortfolioManager) Get(uuid uuid.UUID) (*DomainModels.PortfolioDomainModel){
 	portfolioDataModel := this.PortfolioCommand.Get(uuid)
+	if portfolioDataModel == nil {
+		return nil
+	}
+
 	description := this.PortfolioDescriptionCommand.GetByPortfolioUuid(uuid)
 	images := this.PortfolioImageCommand.GetByPortfolioUuid(uuid)
 	videos := this.PortfolioVideoCommand.GetByPortfolioUuid(uuid)
@@ -36,6 +40,19 @@ func (this *PortfolioManager) GetAll() (*[]DomainModels.PortfolioDomainModel) {
 	}
 
 	Sort.SortPortfolioByYear(&domainModels)
+	return &domainModels
+}
+
+func (this *PortfolioManager) GetFeatured() (*[]DomainModels.PortfolioDomainModel) {
+	portfolioItems := this.PortfolioCommand.GetFeatured()
+
+	domainModels := []DomainModels.PortfolioDomainModel{}
+	for _, dataModel := range *portfolioItems {
+		var model DomainModels.PortfolioDomainModel
+		model.ToDomainModel(&dataModel, nil, nil, nil)
+		domainModels = append(domainModels, model)
+	}
+
 	return &domainModels
 }
 

@@ -2,7 +2,7 @@ package Managers
 
 import (
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Data/Commands"
-	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/DomainModels"
+	// "github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/DomainModels"
 )
 
 type ExperienceManager struct {
