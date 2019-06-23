@@ -43,9 +43,18 @@ func (this *ExperienceManager) Update(model *DomainModels.ExperienceDomainModel)
 		return nil
 	}
 
+	existingContents := this.ExperienceContentCommand.GetByExperienceUuid(model.Uuid)
+	keepContents := make(map[uuid.UUID]bool)
 	for _, content := range *model.Content {
-		if !this.ExperienceContentCommand.Exists(content.Uuid) {
+		keepContents[content.Uuid] = true
+		if (content.Uuid != uuid.Nil && !this.ExperienceContentCommand.Exists(content.Uuid)) || content.ExperienceUuid != model.Uuid {
 			return nil
+		}
+	}
+
+	for _, content := range *existingContents {
+		if !keepContents[content.Uuid] {
+			this.ExperienceContentCommand.Delete(content.Uuid)
 		}
 	}
 
@@ -56,6 +65,7 @@ func (this *ExperienceManager) Insert(model *DomainModels.ExperienceDomainModel)
 	dataModel := this.ExperienceCommand.Upsert(model.ToDataModel())
 
 	for _, content := range *model.Content {
+		content.ExperienceUuid = dataModel.Uuid
 		this.ExperienceContentCommand.Upsert(&content)
 	}
 

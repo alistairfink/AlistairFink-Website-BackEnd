@@ -53,7 +53,7 @@ func Routes(db *pg.DB, config *Utilities.Config) *chi.Mux {
 	// Controllers
 	aboutController := Controllers.NewAboutController(db, config)
 	educationController := Controllers.NewEducationController(db, config)
-	experienceController := Controllers.NewExperienceController(db)
+	experienceController := Controllers.NewExperienceController(db, config)
 	portfolioController := Controllers.NewPortfolioController(db)
 
 	// Paths
