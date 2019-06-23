@@ -49,21 +49,49 @@ func (this *EducationManager) Update(model *DomainModels.EducationDomainModel) (
 		return nil
 	}
 
+	existingScholarships := this.EducationScholarshipCommand.GetByEducationUuid(model.Uuid)
+	keepScholarships := make(map[uuid.UUID]bool)
 	for _, scholarship := range *model.Scholarship {
-		if !this.EducationScholarshipCommand.Exists(scholarship.Uuid) {
-			return nil
-		}
-	} 
-
-	for _, award := range *model.Award {
-		if !this.EducationAwardCommand.Exists(award.Uuid) {
+		keepScholarships[scholarship.Uuid] = true
+		if (scholarship.Uuid != uuid.Nil && !this.EducationScholarshipCommand.Exists(scholarship.Uuid)) || scholarship.EducationUuid != model.Uuid {
 			return nil
 		}
 	}
 
-	for _, extracarricular := range *model.Extracurricular {
-		if !this.EducationExtracurricularCommand.Exists(extracarricular.Uuid) {
+	for _, scholarship := range *existingScholarships {
+		if !keepScholarships[scholarship.Uuid] {
+			this.EducationScholarshipCommand.Delete(scholarship.Uuid)
+		}
+	}
+
+
+	existingAwards := this.EducationAwardCommand.GetByEducationUuid(model.Uuid)
+	keepAwards := make(map[uuid.UUID]bool)
+	for _, award := range *model.Award {
+		keepAwards[award.Uuid] = true
+		if (award.Uuid != uuid.Nil && !this.EducationAwardCommand.Exists(award.Uuid)) || award.EducationUuid != model.Uuid {
 			return nil
+		}
+	}
+
+	for _, award := range *existingAwards {
+		if !keepAwards[award.Uuid] {
+			this.EducationAwardCommand.Delete(award.Uuid)
+		}
+	}
+
+	existingExtracurriculars := this.EducationExtracurricularCommand.GetByEducationUuid(model.Uuid)
+	keepExtracurriculars := make(map[uuid.UUID]bool)
+	for _, extracarricular := range *model.Extracurricular {
+		keepExtracurriculars[extracarricular.Uuid] = true
+		if (extracarricular.Uuid != uuid.Nil && !this.EducationExtracurricularCommand.Exists(extracarricular.Uuid)) || extracarricular.EducationUuid != model.Uuid {
+			return nil
+		}
+	}
+
+	for _, extracurricular := range *existingExtracurriculars {
+		if !keepExtracurriculars[extracurricular.Uuid] {
+			this.EducationExtracurricularCommand.Delete(extracurricular.Uuid)
 		}
 	}
 
