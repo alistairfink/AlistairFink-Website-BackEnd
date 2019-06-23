@@ -12,6 +12,7 @@ import (
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Utilities"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Data/DatabaseConnection"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/Middleware"
+	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/Controllers"
 )
 
 func main() {
@@ -48,10 +49,17 @@ func Routes(db *pg.DB, config *Utilities.Config) *chi.Mux {
 	)
 
 	// Controllers
+	aboutController := Controllers.NewAboutController(db)
+	educationController := Controllers.NewEducationController(db)
+	experienceController := Controllers.NewExperienceController(db)
+	portfolioController := Controllers.NewPortfolioController(db)
 
 	// Paths
 	router.Route("/api", func(routes chi.Router) {
-
+		routes.Mount("/about", aboutController.Routes())
+		routes.Mount("/education", educationController.Routes())
+		routes.Mount("/experience", experienceController.Routes())
+		routes.Mount("/portfolio", portfolioController.Routes())
 	})
 
 	return router
