@@ -4,5 +4,7 @@ This is probably around version 4 or 5 of the back end for this website. I creat
 
 ## Architecture
 * React Frontend
-* Go/Chi Backend
-* Postgres Database
+* Go/Chi Backend (Running in Docker Container)
+* Postgres Database (Running in Docker Container)
+
+Note: Before you ask the stuff in the config file has been changed in production so don't even try.
