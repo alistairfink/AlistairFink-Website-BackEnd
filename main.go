@@ -30,9 +30,11 @@ func main() {
 		return nil
 	}
 
+	println("================================= Routes =================================")
 	if err := chi.Walk(router, walkFunc); err != nil {
 		log.Panicf("Logging err: %s\n", err.Error())
 	}
+	println("==========================================================================\n")
 
 	log.Fatal(http.ListenAndServe(":" + config.Port, router))
 }
@@ -49,7 +51,7 @@ func Routes(db *pg.DB, config *Utilities.Config) *chi.Mux {
 	)
 
 	// Controllers
-	aboutController := Controllers.NewAboutController(db)
+	aboutController := Controllers.NewAboutController(db, config)
 	educationController := Controllers.NewEducationController(db)
 	experienceController := Controllers.NewExperienceController(db)
 	portfolioController := Controllers.NewPortfolioController(db)

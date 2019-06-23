@@ -10,28 +10,14 @@ type AboutCommand struct {
 	DB *pg.DB
 }
 
-func (this *AboutCommand) Get(uuid uuid.UUID) (*DataModels.AboutDataModel) { 
-	if !this.Exists(uuid) {
-		return nil
-	}
-
-	var models []DataModels.AboutDataModel
-	err := this.DB.Model(&models).Where("id = ?", uuid).Select()
-	if err != nil {
-		panic(err)
-	}
-
-	return &models[0]
-}
-
-func (this *AboutCommand) GetAll() (*[]DataModels.AboutDataModel) {
+func (this *AboutCommand) Get() (*DataModels.AboutDataModel) {
 	var models []DataModels.AboutDataModel
 	err := this.DB.Model(&models).Select()
 	if err != nil {
 		panic(err)
 	}
 
-	return &models
+	return &models[0]
 }
 
 func (this *AboutCommand) Upsert(model *DataModels.AboutDataModel) (*DataModels.AboutDataModel) {
@@ -47,11 +33,11 @@ func (this *AboutCommand) Upsert(model *DataModels.AboutDataModel) (*DataModels.
 		}
 	}
 
-	return this.Get(model.Uuid)
+	return this.Get()
 }
 
 func (this *AboutCommand) Delete(uuid uuid.UUID) bool {
-	model := this.Get(uuid)
+	model := this.Get()
 	if model == nil {
 		return false
 	}

@@ -12,13 +12,10 @@ type AboutManager struct {
 	AboutDescriptionCommand *Commands.AboutDescriptionCommand
 }
 
-func (this *AboutManager) Get(uuid uuid.UUID) (*DomainModels.AboutDomainModel){
-	about := this.AboutCommand.Get(uuid)
-	if about == nil {
-		return nil
-	}
+func (this *AboutManager) Get() (*DomainModels.AboutDomainModel){
+	about := this.AboutCommand.Get()
 
-	aboutDesc := this.AboutDescriptionCommand.GetByAboutUuid(uuid)
+	aboutDesc := this.AboutDescriptionCommand.GetByAboutUuid(about.Uuid)
 
 	var domainModel DomainModels.AboutDomainModel
 	Sort.SortAboutDescriptionBySortOrder(aboutDesc)
@@ -32,15 +29,25 @@ func (this *AboutManager) Update(model *DomainModels.AboutDomainModel) (*DomainM
 	}
 
 	for _, desc := range *model.Description {
-		if !this.AboutDescriptionCommand.Exists(desc.Uuid) {
+		if desc.AboutUuid != model.Uuid {
 			return nil
 		}
 	}
 
 	this.AboutCommand.Upsert(model.ToDataModel())
+	existing := this.AboutDescriptionCommand.GetByAboutUuid(model.Uuid)
+
+	toKeep := make(map[uuid.UUID]bool)
 	for _, desc := range *model.Description {
-		this.AboutDescriptionCommand.Upsert(&desc)
+		dataModel := this.AboutDescriptionCommand.Upsert(&desc)
+		toKeep[dataModel.Uuid] = true
 	}
 
-	return this.Get(model.Uuid)
+	for _, exist := range *existing {
+		if !toKeep[exist.Uuid] {
+			this.AboutDescriptionCommand.Delete(exist.Uuid)
+		}
+	}
+
+	return this.Get()
 }
