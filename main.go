@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"fmt"
 	"log"
 	"strings"
@@ -17,7 +18,12 @@ import (
 
 func main() {
 	// Read Config
-	config := Utilities.GetConfig(".", "config")
+	var config *Utilities.Config
+	if _, err := os.Stat("./Config.json"); err == nil {
+		config = Utilities.GetConfig(".", "Config")
+	} else {
+		config = Utilities.GetConfig("/go/src/github.com/alistairfink/AlistairFink-Website-BackEnd/.", "Config")
+	}
 
 	// Open DB
 	db := DatabaseConnection.Connect(config)
