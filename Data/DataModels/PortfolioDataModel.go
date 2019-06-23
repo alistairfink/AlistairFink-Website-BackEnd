@@ -8,7 +8,7 @@ import (
 type PortfolioDataModel struct {
 	tableName struct{} `sql:"portfolio"`
 	Uuid uuid.UUID `sql:"id, pk"`
-	Name string `sql:"string, notnull"`
-	Thumbnail string `sql:"string, notnull"`
+	Name string `sql:"name, notnull"`
+	Thumbnail string `sql:"thumbnail, notnull"`
 	Year time.Time `sql:"year, notnull"`
 }

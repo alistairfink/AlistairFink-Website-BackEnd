@@ -44,6 +44,47 @@ func (this *PortfolioCommand) GetFeatured() (*[]DataModels.PortfolioFeaturedData
 	return &models
 }
 
+func (this *PortfolioCommand) UpsertFeatured(model *DataModels.PortfolioFeaturedDataModel) (*[]DataModels.PortfolioFeaturedDataModel) {
+	var models []DataModels.PortfolioFeaturedDataModel
+	exists, err := this.DB.Model(&models).Where("portfolio_id = ?", model.PortfolioUuid).Exists()
+	if err != nil {
+		panic(err)
+	}
+
+	if exists {
+		_, err = this.DB.Model(model).Where("portfolio_id = ?", model.PortfolioUuid).Update(model)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		err = this.DB.Insert(model)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return this.GetFeatured()
+}
+
+func (this *PortfolioCommand) DeleteFeatured(uuid uuid.UUID) bool {
+	var models []DataModels.PortfolioFeaturedDataModel
+	err := this.DB.Model(&models).Where("portfolio_id = ?", uuid).Select()
+	if err != nil {
+		panic(err)
+	}
+
+	if len(models) == 0 {
+		return false
+	}
+
+	err = this.DB.Delete(&models[0])
+	if err != nil {
+		panic(err)
+	}
+
+	return true
+}
+
 func (this *PortfolioCommand) Upsert(model *DataModels.PortfolioDataModel) (*DataModels.PortfolioDataModel) {
 	if this.Exists(model.Uuid) {
 		_, err := this.DB.Model(model).Where("id = ?", model.Uuid).Update(model)

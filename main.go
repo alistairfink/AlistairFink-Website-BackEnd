@@ -54,7 +54,7 @@ func Routes(db *pg.DB, config *Utilities.Config) *chi.Mux {
 	aboutController := Controllers.NewAboutController(db, config)
 	educationController := Controllers.NewEducationController(db, config)
 	experienceController := Controllers.NewExperienceController(db, config)
-	portfolioController := Controllers.NewPortfolioController(db)
+	portfolioController := Controllers.NewPortfolioController(db, config)
 
 	// Paths
 	router.Route("/api", func(routes chi.Router) {

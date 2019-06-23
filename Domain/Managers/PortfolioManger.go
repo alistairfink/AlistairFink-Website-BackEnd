@@ -3,6 +3,7 @@ package Managers
 import (
 	"github.com/google/uuid"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Data/Commands"
+	"github.com/alistairfink/AlistairFink-Website-BackEnd/Data/DataModels"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/DomainModels"
 	"github.com/alistairfink/AlistairFink-Website-BackEnd/Domain/Sort"
 )
@@ -54,11 +55,36 @@ func (this *PortfolioManager) GetFeatured() (*[]DomainModels.PortfolioDomainMode
 	// If this is a problem redo this to join portfolio_featured and portfolio
 	var portfolioDomainModels []DomainModels.PortfolioDomainModel
 	for _, portfolioItem := range *featured {
-		model := this.Get(portfolioItem.PortfolioUuid)
-		portfolioDomainModels = append(portfolioDomainModels, *model)
+		portfolioDataModel := this.PortfolioCommand.Get(portfolioItem.PortfolioUuid)
+		var domainModel DomainModels.PortfolioDomainModel
+		domainModel.ToDomainModel(portfolioDataModel, &[]DataModels.PortfolioDescriptionDataModel{}, &[]DataModels.PortfolioImageDataModel{}, &[]DataModels.PortfolioVideoDataModel{})
+		portfolioDomainModels = append(portfolioDomainModels, domainModel)
 	}
 
 	return &portfolioDomainModels
+}
+
+func (this *PortfolioManager) UpdateFeatured(models *[]DataModels.PortfolioFeaturedDataModel) (*[]DomainModels.PortfolioDomainModel) {
+	existingFeats := this.PortfolioCommand.GetFeatured()
+	keepFeat := make(map[uuid.UUID]bool)
+	for _, feat := range *models {
+		keepFeat[feat.PortfolioUuid] = true
+		if !this.PortfolioCommand.Exists(feat.PortfolioUuid) {
+			return nil
+		} 
+	}
+
+	for _, feat := range *models {
+		this.PortfolioCommand.UpsertFeatured(&feat)
+	}
+
+	for _, feat := range *existingFeats {
+		if !keepFeat[feat.PortfolioUuid] {
+			this.PortfolioCommand.DeleteFeatured(feat.PortfolioUuid)
+		}
+	}
+
+	return this.GetFeatured()
 }
 
 func (this *PortfolioManager) Update(model *DomainModels.PortfolioDomainModel) (*DomainModels.PortfolioDomainModel) {
@@ -66,21 +92,48 @@ func (this *PortfolioManager) Update(model *DomainModels.PortfolioDomainModel) (
 		return nil
 	}
 
+	existingVideo := this.PortfolioVideoCommand.GetByPortfolioUuid(model.Uuid)
+	keepVideo := make(map[uuid.UUID]bool)
 	for _, video := range *model.Video {
-		if !this.PortfolioVideoCommand.Exists(video.Uuid) {
+		keepVideo[video.Uuid] = true
+		if (video.Uuid != uuid.Nil && !this.PortfolioVideoCommand.Exists(video.Uuid)) || video.PortfolioUuid != model.Uuid {
 			return nil
 		}
 	}
 
+	for _, video := range *existingVideo {
+		if !keepVideo[video.Uuid] {
+			this.PortfolioVideoCommand.Delete(video.Uuid)
+		}
+	}
+
+	existingImage := this.PortfolioImageCommand.GetByPortfolioUuid(model.Uuid)
+	keepImage := make(map[uuid.UUID]bool)
 	for _, image := range *model.Image {
-		if !this.PortfolioImageCommand.Exists(image.Uuid) {
+		keepImage[image.Uuid] = true
+		if (image.Uuid != uuid.Nil && !this.PortfolioImageCommand.Exists(image.Uuid)) || image.PortfolioUuid != model.Uuid {
 			return nil
 		}
 	}
 
+	for _, image := range *existingImage {
+		if !keepImage[image.Uuid] {
+			this.PortfolioImageCommand.Delete(image.Uuid)
+		}
+	}
+
+	existingDesc := this.PortfolioDescriptionCommand.GetByPortfolioUuid(model.Uuid)
+	keepDesc := make(map[uuid.UUID]bool)
 	for _, desc := range *model.Description {
-		if !this.PortfolioDescriptionCommand.Exists(desc.Uuid) {
+		keepDesc[desc.Uuid] = true
+		if (desc.Uuid != uuid.Nil && !this.PortfolioDescriptionCommand.Exists(desc.Uuid)) || desc.PortfolioUuid != model.Uuid {
 			return nil
+		}
+	}
+
+	for _, desc := range *existingDesc {
+		if !keepDesc[desc.Uuid] {
+			this.PortfolioDescriptionCommand.Delete(desc.Uuid)
 		}
 	}
 
@@ -91,14 +144,17 @@ func (this *PortfolioManager) Insert(model *DomainModels.PortfolioDomainModel) (
 	dataModel := this.PortfolioCommand.Upsert(model.ToDataModel())
 	
 	for _, video := range *model.Video {
+		video.PortfolioUuid = dataModel.Uuid
 		this.PortfolioVideoCommand.Upsert(&video)
 	}
 
 	for _, image := range *model.Image {
+		image.PortfolioUuid = dataModel.Uuid
 		this.PortfolioImageCommand.Upsert(&image)
 	}
 
 	for _, desc := range *model.Description {
+		desc.PortfolioUuid = dataModel.Uuid
 		this.PortfolioDescriptionCommand.Upsert(&desc)
 	}
 
@@ -110,6 +166,14 @@ func (this *PortfolioManager) Delete(uuid uuid.UUID) bool {
 		return false
 	}
 	
+	existingFeatured := this.PortfolioCommand.GetFeatured()
+	for _, feat := range *existingFeatured {
+		if feat.PortfolioUuid == uuid {
+			this.PortfolioCommand.DeleteFeatured(uuid)
+			break
+		}
+	}
+
 	portfolioDescriptions := this.PortfolioDescriptionCommand.GetByPortfolioUuid(uuid)
 	portfolioImages := this.PortfolioImageCommand.GetByPortfolioUuid(uuid)
 	portfolioVideos := this.PortfolioVideoCommand.GetByPortfolioUuid(uuid)
